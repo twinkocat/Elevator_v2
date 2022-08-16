@@ -17,7 +17,7 @@
 
 <li>If u want to run in windows need to install module windows-curses</li>
 
-<li>open directory Elevator v2 in console</li>
+<li>open directory Elevator_v2 in console</li>
 <li>type <strong>python3.10 main.py</strong></li>
 
 <p>In VSCode</p>
