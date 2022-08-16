@@ -134,9 +134,9 @@ class House:
             for passenger in passengers_to_exit:
                 self.passengers.pop(self.passengers.index(passenger))
 
-        def call_or_stop_elevator(self, house):
+        def call_or_stop_elevator(self, floors):
             bool_list = []
-            for floor in house:
+            for floor in floors:
                 passenger_destinations_floor = [passenger.destination_floor for passenger in
                                                 floor.passengers_on_the_floor]
                 for destination_floor in passenger_destinations_floor:
@@ -198,11 +198,11 @@ def floors_create(house_floor, passenger, max_floors: int = MAX_FLOORS):
     return floors_list
 
 
-def executor(flours_list, elevator):
+def executor(house):
     while True:
         time.sleep(INTERVAL_FOR_UPDATE)
 
-        floor = [floor for floor in flours_list if floor.floor == elevator.current_floor]
+        floor = [floor for floor in house.floors if floor.floor == house.elevator.current_floor]
 
         #########################################################################################################
         #                                                 GUI                                                   #
@@ -215,36 +215,37 @@ def executor(flours_list, elevator):
         #                                                                                                       #
         #                                              elevator GUI                                             #
         my_screen.addstr(2, 23, "|floor|")                                                                      #
-        my_screen.addstr(3, 24, f'>|{elevator.current_floor}|<')                                                #
-        my_screen.addstr(4, 18, f'direction is {elevator.direction}')                                           #
-        my_screen.addstr(5, 16, f' min target floor {elevator.min_floor_target}')                               #
-        my_screen.addstr(6, 16, f' max target floor {elevator.max_floor_target}')                               #
+        my_screen.addstr(3, 24, f'>|{house.elevator.current_floor}|<')                                          #
+        my_screen.addstr(4, 18, f'direction is {house.elevator.direction}')                                     #
+        my_screen.addstr(5, 16, f' min target floor {house.elevator.min_floor_target}')                         #
+        my_screen.addstr(6, 16, f' max target floor {house.elevator.max_floor_target}')                         #
         #                                                                                                       #
         #                                               House GUI                                               #
-        my_screen.addstr(7, 1, f' Flour    |    Elevator have {elevator.passengers_count} passengers'           #
+        my_screen.addstr(7, 1, f' Flour    |    Elevator have {house.elevator.passengers_count} passengers'     #
                                f'               | Passengers [id : destination floor]')                         #
         #                                                                                                       #
         for floor_element in range(MAX_FLOORS):                                                                 #
             my_screen.addstr(8 + floor_element, 4, f'{floor_element + 1}')                                      #
-            my_screen.addstr(7 + elevator.current_floor, 11, f'| {elevator.passengers} |')                      #
+            my_screen.addstr(7 + house.elevator.current_floor, 11, f'| {house.elevator.passengers} |')          #
             my_screen.addstr(8 + floor_element, 57,                                                             #
-                             f'| {[floor for floor in flours_list if floor.floor == floor_element + 1]}')  #
+                             f'| {[floor for floor in house.floors if floor.floor == floor_element + 1]}')      #
                                                                                                                 #
         my_screen.refresh()                                                                                     #
         #                                                                                                       #
         #########################################################################################################
 
-        if elevator.passengers_count <= MAX_CAPACITY or elevator.current_floor == elevator.min_floor_target:
-            elevator.exit_passenger(*floor)
-            elevator.entire_passenger(*floor)
+        if house.elevator.passengers_count <= MAX_CAPACITY \
+                or house.elevator.current_floor == house.elevator.min_floor_target:
+            house.elevator.exit_passenger(*floor)
+            house.elevator.entire_passenger(*floor)
 
-        if elevator.min_floor_target > elevator.current_floor:
-            elevator.go_up()
+        if house.elevator.min_floor_target > house.elevator.current_floor:
+            house.elevator.go_up()
         else:
-            elevator.go_down()
+            house.elevator.go_down()
 
-        if elevator.passengers_count == 0 and elevator.direction == "None":
-            bool_list = elevator.call_or_stop_elevator(flours_list)
+        if house.elevator.passengers_count == 0 and house.elevator.direction == "None":
+            bool_list = house.elevator.call_or_stop_elevator(house.floors)
             if False in bool_list:
                 bool_list.clear()
             else:
@@ -261,7 +262,7 @@ if __name__ == '__main__':
     my_screen = curses.initscr()
 
     # execute!
-    executor(house.floors, house.elevator)
+    executor(house)
 
     my_screen.getch()
 
