@@ -2,7 +2,7 @@
 
 <p>This is simple worked model house with Floors, Passengers and Elevator.</p>
 
-<p>git clone https://github.com/twinkocat/Elevator.git</p>
+<p>git clone https://github.com/twinkocat/Elevator_v2.git</p>
 
 
 
