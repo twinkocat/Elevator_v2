@@ -13,7 +13,10 @@
     <li>MAX_CAPACITY - changing maximum passengers count in Elevator</li>
 </ol>
 
-<p><strong>HOW TO use in console</strong></p>
+<p><strong>HOW TO use</strong></p>
+
+<li>If u want to run in windows need to install module windows-curses</li>
+
 <li>open directory Elevator v2 in console</li>
 <li>type <strong>python3.10 main.py</strong></li>
 
