@@ -20,12 +20,5 @@
 <li>open directory Elevator_v2 in console</li>
 <li>type <strong>python3.10 main.py</strong></li>
 
-<p>In VSCode</p>
-<li>run main.py</li>
-
-
-
-
-
 <p><strong>Executor automatically stop when all Passengers be in required self floors</strong></p>
 
