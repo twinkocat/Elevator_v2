@@ -4,7 +4,6 @@ import time
 import enum
 from random import randint, choice
 
-
 # DO NOT TOUCH THIS PLS :3
 FIRST_FLOOR = 1
 ONE_FLOOR = 1
@@ -77,7 +76,7 @@ class House:
 
     class Elevator:
 
-        def __init__(self, current_floor=FIRST_FLOOR, direction="None"):
+        def __init__(self, current_floor=FIRST_FLOOR):
 
             self.max_capacity = MAX_CAPACITY
             self.current_floor = current_floor
@@ -219,30 +218,6 @@ class House:
             return self._destination_floor
 
 
-def floors_create(house_floor, passenger, max_floors: int = MAX_FLOORS):
-    if MIN_PASSENGERS > MAX_PASSENGERS:
-        raise Exception(f'{MIN_PASSENGERS} can be higher then {MAX_PASSENGERS}')
-
-    """Service for create floors objects and passengers on this floor"""
-    floors_list = []
-    for current_floor in range(1, max_floors + 1):
-        floors_list.append(
-            # generate floor
-            house_floor(
-                current_floor,
-                # generate passenger
-                [passenger(
-                    current_floor,
-                    choice([i for i in range(1, max_floors + 1) if i != current_floor])
-                )
-                    # generate random count of passengers in the floor
-                    for x in range(randint(MIN_PASSENGERS, MAX_PASSENGERS))
-                ]
-            )
-        )
-    return floors_list
-
-
 def executor(house):
     while True:
         time.sleep(INTERVAL_FOR_UPDATE)
@@ -255,8 +230,8 @@ def executor(house):
         # Run -> Edit Configurations...-> Executions -> toggle on "Emulate terminal in output console" -> Apply #
         #                                  curses only working into console...                                  #
         #                                                                                                       #
-        my_screen.clear()                                                                                       #
-        my_screen.border(0)                                                                                     #
+        my_screen.clear()  #
+        my_screen.border(0)  #
         #                                                                                                       #
         #                                              elevator GUI                                             #
         my_screen.addstr(2, 23, "|floor|")  #
@@ -266,16 +241,16 @@ def executor(house):
         my_screen.addstr(6, 16, f' max target floor {house.elevator.max_floor_target}')  #
         #                                                                                                       #
         #                                               House GUI                                               #
-        my_screen.addstr(7, 1, f' Flour    |    Elevator have {house.elevator.passengers_count} passengers'     #
-                               f'               | Passengers [id : destination floor]')                         #
+        my_screen.addstr(7, 1, f' Flour    |    Elevator have {house.elevator.passengers_count} passengers'  #
+                               f'               | Passengers [id : destination floor]')  #
         #                                                                                                       #
-        for floor_element in range(MAX_FLOORS):                                                                 #
-            my_screen.addstr(8 + floor_element, 4, f'{floor_element + 1}')                                      #
-            my_screen.addstr(7 + house.elevator.current_floor, 11, f'| {house.elevator.passengers} |')          #
-            my_screen.addstr(8 + floor_element, 57,                                                             #
-                             f'| {[floor for floor in house.floors if floor.floor == floor_element + 1]}')      #
-                                                                                                                #
-        my_screen.refresh()                                                                                     #
+        for floor_element in range(MAX_FLOORS):  #
+            my_screen.addstr(8 + floor_element, 4, f'{floor_element + 1}')  #
+            my_screen.addstr(7 + house.elevator.current_floor, 11, f'| {house.elevator.passengers} |')  #
+            my_screen.addstr(8 + floor_element, 57,  #
+                             f'| {[floor for floor in house.floors if floor.floor == floor_element + 1]}')  #
+            #
+        my_screen.refresh()  #
         #                                                                                                       #
         #########################################################################################################
 
@@ -303,10 +278,8 @@ if __name__ == '__main__':
     house = House()
     # create GUI
     my_screen = curses.initscr()
-
     # execute!
     executor(house)
 
     my_screen.getch()
-
     curses.endwin()
