@@ -1,6 +1,7 @@
 import curses
 import itertools
 import time
+import enum
 from random import randint, choice
 
 
@@ -20,6 +21,13 @@ MAX_CAPACITY = 5
 
 # loop update interval
 INTERVAL_FOR_UPDATE = 0.65
+
+
+# enum elevator direction
+class Direction(enum.Enum):
+    Stop = 0
+    Down = 1
+    Up = 2
 
 
 class House:
@@ -44,7 +52,7 @@ class House:
             self.max_capacity = MAX_CAPACITY
             self.current_floor = current_floor
             self.passengers = []
-            self._direction = direction
+            self._direction = Direction.Stop
 
         def __repr__(self):
             return f'current_floor: {self.current_floor} | passengers: {[*self.passengers]}'
@@ -56,7 +64,7 @@ class House:
         @property
         def min_floor_target(self):
             if not self.passengers:
-                self.direction = "None"  # elevator stopped and waiting call
+                self.direction = Direction.Stop  # elevator stopped and waiting call
                 return 0
             else:
                 return min([passenger.destination_floor for passenger in self.passengers])
@@ -74,7 +82,7 @@ class House:
 
         @direction.setter
         def direction(self, value):
-            if value == "Up" or "Down" or "None":
+            if value == Direction.Up or Direction.Down or Direction.Stop:
                 self._direction = value
             else:
                 print(f"Value {value} is can`t be direction for elevator")
@@ -82,16 +90,16 @@ class House:
         def go_up(self):
             if self.current_floor < MAX_FLOORS:
                 self.current_floor += ONE_FLOOR
-                self.direction = "Up"
+                self.direction = Direction.Up
             else:
-                self.direction = "None"
+                self.direction = Direction.Stop
 
         def go_down(self):
             if self.current_floor > FIRST_FLOOR:
                 self.current_floor -= ONE_FLOOR
-                self.direction = "Down"
+                self.direction = Direction.Down
             else:
-                self.direction = "None"
+                self.direction = Direction.Stop
 
         def entire_passenger(self, floor):
             """This method are filter objects for entering to elevator"""
@@ -103,21 +111,28 @@ class House:
                     passenger for passenger
                     in floor.passengers_on_the_floor
                     if passenger.destination_floor > self.current_floor
-                    and self.direction == "Up"][0: MAX_CAPACITY - self.passengers_count
+                    and self.direction == Direction.Up][0: MAX_CAPACITY - self.passengers_count
                 ] \
                 or \
                 [  # direction is Down
                     passenger for passenger
                     in floor.passengers_on_the_floor
                     if passenger.destination_floor < self.current_floor
-                    and self.direction == "Down"][0: MAX_CAPACITY - self.passengers_count
+                    and self.direction == Direction.Down][0: MAX_CAPACITY - self.passengers_count
                 ] \
                 or \
                 [  # direction is None
                     passenger for passenger
                     in floor.passengers_on_the_floor
                     if passenger.destination_floor != self.current_floor
-                    and self.direction == "None"][0: MAX_CAPACITY - self.passengers_count
+                    and self.direction == Direction.Stop][0: MAX_CAPACITY - self.passengers_count
+                ] \
+                or \
+                [   # entire a passengers in last floor
+                    passenger for passenger
+                    in floor.passengers_on_the_floor
+                    if passenger.destination_floor != self.current_floor
+                    and self.current_floor == MAX_FLOORS][0: MAX_CAPACITY - self.passengers_count
                 ]
 
             self.passengers.extend(passengers_to_entire)
@@ -214,11 +229,11 @@ def executor(house):
         my_screen.border(0)                                                                                     #
         #                                                                                                       #
         #                                              elevator GUI                                             #
-        my_screen.addstr(2, 23, "|floor|")                                                                      #
-        my_screen.addstr(3, 24, f'>|{house.elevator.current_floor}|<')                                          #
-        my_screen.addstr(4, 18, f'direction is {house.elevator.direction}')                                     #
-        my_screen.addstr(5, 16, f' min target floor {house.elevator.min_floor_target}')                         #
-        my_screen.addstr(6, 16, f' max target floor {house.elevator.max_floor_target}')                         #
+        my_screen.addstr(2, 23, "|floor|")  #
+        my_screen.addstr(3, 24, f'>|{house.elevator.current_floor}|<')  #
+        my_screen.addstr(4, 18, f'direction is {house.elevator.direction.name}')  #
+        my_screen.addstr(5, 16, f' min target floor {house.elevator.min_floor_target}')  #
+        my_screen.addstr(6, 16, f' max target floor {house.elevator.max_floor_target}')  #
         #                                                                                                       #
         #                                               House GUI                                               #
         my_screen.addstr(7, 1, f' Flour    |    Elevator have {house.elevator.passengers_count} passengers'     #
@@ -244,7 +259,7 @@ def executor(house):
         else:
             house.elevator.go_down()
 
-        if house.elevator.passengers_count == 0 and house.elevator.direction == "None":
+        if house.elevator.passengers_count == 0 and house.elevator.direction == Direction.Stop:
             bool_list = house.elevator.call_or_stop_elevator(house.floors)
             if False in bool_list:
                 bool_list.clear()
