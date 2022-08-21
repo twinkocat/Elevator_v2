@@ -32,9 +32,39 @@ class Direction(enum.Enum):
 
 class House:
 
-    def __init__(self, floors):
+    def __init__(self):
         self.elevator = self.Elevator()
-        self.floors: list = floors
+        self.floors = self.floors_create()
+
+    def floors_create(self) -> list:
+        """Constructor for create House object with Floors and Passengers"""
+        start_function = time.time()
+        if MIN_PASSENGERS > MAX_PASSENGERS:
+            raise Exception(f'{MIN_PASSENGERS} can be higher then {MAX_PASSENGERS}')
+
+        """Service for create floors objects and passengers on this floor"""
+        floors_list = []
+        for current_floor in range(1, MAX_FLOORS + 1):
+            floors_list.append(
+                # generate floor
+                self.Floor(
+                    current_floor,
+                    # generate passenger
+                    [self.Passenger(
+                        current_floor,
+                        choice([destination_floor for destination_floor in range(1, MAX_FLOORS + 1)
+                                if destination_floor != current_floor])
+                    )
+                        # generate random count of passengers in the floor
+                        for passengers in range(randint(MIN_PASSENGERS, MAX_PASSENGERS))
+                    ]
+                )
+            )
+        end_function = time.time()
+        print(f'function complete the house in {end_function - start_function} seconds')
+        time.sleep(2)
+
+        return floors_list
 
     class Floor:
 
@@ -270,10 +300,8 @@ def executor(house):
 
 if __name__ == '__main__':
     # create object House from service
-    house = House(
-        floors_create(House.Floor, House.Passenger)
-    )
-
+    house = House()
+    # create GUI
     my_screen = curses.initscr()
 
     # execute!
