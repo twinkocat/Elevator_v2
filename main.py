@@ -1,11 +1,20 @@
-import curses
+try:
+    import curses
+except ModuleNotFoundError:
+    from sys import platform
+
+    if platform == "win32":
+        print("EXCEPTION!: Module curses not found.\n"
+              "Need install module curses: pip install windows-curses")
+
 import time
 
 from constants import INTERVAL_FOR_UPDATE, MAX_CAPACITY, MAX_FLOORS
-from src.house import House
+from src.house import obj_house
 
 
-def executor(house):
+def scenario_executor(house: obj_house) -> None:
+    my_screen = curses.initscr()
     while True:
         time.sleep(INTERVAL_FOR_UPDATE)
 
@@ -58,15 +67,9 @@ def executor(house):
             else:
                 my_screen.addstr(3, 40, "DONE! Turn any key to exit.")
                 break
+    my_screen.getch()
+    curses.endwin()
 
 
 if __name__ == '__main__':
-    # create object House from service
-    house = House()
-    # create GUI
-    my_screen = curses.initscr()
-    # execute!
-    executor(house)
-
-    my_screen.getch()
-    curses.endwin()
+    scenario_executor(obj_house)
