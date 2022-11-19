@@ -9,22 +9,22 @@ class Elevator:
         Down = 1
         Up = 2
 
-    def __init__(self, current_floor=FIRST_FLOOR):
+    def __init__(self, current_floor=FIRST_FLOOR) -> None:
 
-        self.max_capacity = MAX_CAPACITY
-        self.current_floor = current_floor
-        self.passengers = []
-        self._direction = self.Direction.Stop
+        self.max_capacity: int = MAX_CAPACITY
+        self.current_floor: int = current_floor
+        self.passengers: list = []
+        self._direction: Enum = self.Direction.Stop
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'current_floor: {self.current_floor} | passengers: {[*self.passengers]}'
 
     @property
-    def passengers_count(self):
+    def passengers_count(self) -> int:
         return len(self.passengers)
 
     @property
-    def min_floor_target(self):
+    def min_floor_target(self) -> int:
         if not self.passengers:
             self.direction = self.Direction.Stop  # elevator stopped and waiting call
             return 0
@@ -32,77 +32,73 @@ class Elevator:
             return min([passenger.destination_floor for passenger in self.passengers])
 
     @property
-    def max_floor_target(self):
+    def max_floor_target(self) -> int:
         if not self.passengers:
             return 0
         else:
             return max([passenger.destination_floor for passenger in self.passengers])
 
     @property
-    def direction(self):
+    def direction(self) -> Enum:
         return self._direction
 
     @direction.setter
-    def direction(self, value):
+    def direction(self, value: Enum) -> None:
         if value == self.Direction.Up or self.Direction.Down or self.Direction.Stop:
             self._direction = value
         else:
             print(f"Value {value} is can`t be direction for elevator")
 
-    def go_up(self):
+    def go_up(self) -> None:
         if self.current_floor < MAX_FLOORS:
             self.current_floor += ONE_FLOOR
             self.direction = self.Direction.Up
         else:
             self.direction = self.Direction.Stop
 
-    def go_down(self):
+    def go_down(self) -> None:
         if self.current_floor > FIRST_FLOOR:
             self.current_floor -= ONE_FLOOR
             self.direction = self.Direction.Down
         else:
             self.direction = self.Direction.Stop
 
-    def entire_passenger(self, floor):
+    def entire_passenger(self, floor) -> None:
         """This method are filter objects for entering to elevator"""
 
-        # creating one list of three if the condition is met other do not write in "passengers_to_entire"
+        # creating one list if the conditions is met other do not write in "passengers_to_entire"
 
         passengers_to_entire = \
             [  # direction is Up
                 passenger for passenger
                 in floor.passengers_on_the_floor
                 if passenger.destination_floor > self.current_floor
-                and self.direction == self.Direction.Up][0: MAX_CAPACITY - self.passengers_count
-            ] \
+                and self.direction == self.Direction.Up][0: MAX_CAPACITY - self.passengers_count] \
             or \
             [  # direction is Down
                 passenger for passenger
                 in floor.passengers_on_the_floor
                 if passenger.destination_floor < self.current_floor
-                and self.direction == self.Direction.Down][0: MAX_CAPACITY - self.passengers_count
-            ] \
+                and self.direction == self.Direction.Down][0: MAX_CAPACITY - self.passengers_count] \
             or \
             [  # direction is None
                 passenger for passenger
                 in floor.passengers_on_the_floor
                 if passenger.destination_floor != self.current_floor
-                and self.direction == self.Direction.Stop][0: MAX_CAPACITY - self.passengers_count
-            ] \
+                and self.direction == self.Direction.Stop][0: MAX_CAPACITY - self.passengers_count] \
             or \
             [  # entire a passengers in last floor
                 passenger for passenger
                 in floor.passengers_on_the_floor
                 if passenger.destination_floor != self.current_floor
-                and self.current_floor == MAX_FLOORS][0: MAX_CAPACITY - self.passengers_count
-            ]
+                and self.current_floor == MAX_FLOORS][0: MAX_CAPACITY - self.passengers_count]
 
         self.passengers.extend(passengers_to_entire)
 
         for passenger in passengers_to_entire:
             floor.passengers_on_the_floor.pop(floor.passengers_on_the_floor.index(passenger))
 
-    def exit_passenger(self, floor):
+    def exit_passenger(self, floor) -> None:
         passengers_to_exit = [
             passenger for passenger in self.passengers if passenger.destination_floor == self.current_floor
         ]
@@ -111,7 +107,7 @@ class Elevator:
         for passenger in passengers_to_exit:
             self.passengers.pop(self.passengers.index(passenger))
 
-    def call_or_stop_elevator(self, floors):
+    def call_or_stop_elevator(self, floors) -> list:
         bool_list = []
         for floor in floors:
             passenger_destinations_floor = [passenger.destination_floor for passenger in

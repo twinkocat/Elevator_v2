@@ -10,8 +10,8 @@ from src.passenger import Passenger
 class House:
 
     def __init__(self):
-        self.elevator = self.Elevator()
-        self.floors = self.floors_create()
+        self.elevator: object = self.Elevator()
+        self.floors: list = self.floors_create()
 
     class Floor(Floor):
         pass
@@ -30,16 +30,16 @@ class House:
 
         """Service for create floors objects and passengers on this floor"""
         floors_list = []
-        for current_floor in range(1, MAX_FLOORS + 1):
+        for floor_number in range(1, MAX_FLOORS + 1):
             floors_list.append(
                 # generate floor
                 self.Floor(
-                    current_floor,
+                    floor_number,
                     # generate passenger
                     [self.Passenger(
-                        current_floor,
+                        floor_number,
                         choice([destination_floor for destination_floor in range(1, MAX_FLOORS + 1)
-                                if destination_floor != current_floor])
+                                if destination_floor != floor_number])
                     )
                         # generate random count of passengers in the floor
                         for passengers in range(randint(MIN_PASSENGERS, MAX_PASSENGERS))
@@ -51,3 +51,6 @@ class House:
         time.sleep(2)
 
         return floors_list
+
+
+obj_house = House()
